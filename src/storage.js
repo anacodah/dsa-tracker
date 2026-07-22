@@ -113,6 +113,70 @@ export const saveAudit = async (auditData) => {
   return data;
 };
 
+// ── ROADMAP ───────────────────────────────────────────────
+
+export const getRoadmapPhases = async () => {
+  const { data, error } = await supabase
+    .from('roadmap_phases')
+    .select('*')
+    .order('week_number', { ascending: true });
+  if (error) throw error;
+  return data;
+};
+
+export const saveRoadmapPhase = async (phaseData) => {
+  const user_id = await getUserId();
+  const { data, error } = await supabase
+    .from('roadmap_phases')
+    .insert([{
+      user_id,
+      week_number: phaseData.week_number,
+      title: phaseData.title,
+      topics: phaseData.topics,
+      target: phaseData.target
+    }])
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+};
+
+export const saveMultipleRoadmapPhases = async (phasesData) => {
+  const user_id = await getUserId();
+  const rows = phasesData.map(p => ({
+    user_id,
+    week_number: p.week_number,
+    title: p.title,
+    topics: p.topics,
+    target: p.target
+  }));
+  const { data, error } = await supabase
+    .from('roadmap_phases')
+    .insert(rows)
+    .select();
+  if (error) throw error;
+  return data;
+};
+
+export const updateRoadmapPhase = async (id, updates) => {
+  const { data, error } = await supabase
+    .from('roadmap_phases')
+    .update(updates)
+    .eq('id', id)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+};
+
+export const deleteRoadmapPhase = async (id) => {
+  const { error } = await supabase
+    .from('roadmap_phases')
+    .delete()
+    .eq('id', id);
+  if (error) throw error;
+};
+
 // ── EXPORT / IMPORT ───────────────────────────────────────
 
 export const exportData = async () => {

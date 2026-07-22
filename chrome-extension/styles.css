@@ -1,0 +1,25 @@
+.dsa-tracker-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #ff2e93;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  font-weight: bold;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 4px 12px rgba(255, 46, 147, 0.3);
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dsa-tracker-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(255, 46, 147, 0.4);
+}

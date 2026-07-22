@@ -1,13 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { getProblems } from '../storage';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
-import { Flame, Calendar, Target } from 'lucide-react';
+import { Flame, Calendar, Target, Sparkles, RefreshCw } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import { getProgressAnalysis } from '../ai';
 
 const Dashboard = () => {
   const [problems, setProblems] = useState([]);
   const TARGET_GOAL = 300;
 
   useEffect(() => { getProblems().then(setProblems); }, []);
+
+  const [aiSummary, setAiSummary] = useState(null);
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+
+  const fetchAiAnalysis = async () => {
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      const summary = await getProgressAnalysis(problems);
+      setAiSummary(summary);
+    } catch (err) {
+      setAiError(err.message);
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   const totalSolved = problems.length;
   const progressPercent = Math.min((totalSolved / TARGET_GOAL) * 100, 100);
@@ -191,6 +210,37 @@ const Dashboard = () => {
             </div>
           )}
         </div>
+      </div>
+
+      {/* ── AI Progress Analysis ── */}
+      <div className="glass-panel mt-6">
+        <div className="section-header flex justify-between items-center mb-4">
+          <div>
+            <span className="section-title flex items-center gap-2"><Sparkles size={18} className="text-accent" /> AI Progress Analysis</span>
+            <p className="section-subtitle">Get personalized insights and recommendations based on your recent activity.</p>
+          </div>
+          <button onClick={fetchAiAnalysis} disabled={aiLoading} className="btn btn-secondary flex items-center gap-2">
+            {aiLoading ? <RefreshCw size={16} className="animate-spin" /> : <Sparkles size={16} />}
+            {aiSummary ? 'Refresh Analysis' : 'Analyze Progress'}
+          </button>
+        </div>
+        
+        {aiError && <div className="text-danger mb-4 p-3 bg-red-900/20 border border-red-500/50 rounded-lg">{aiError}</div>}
+        
+        {aiSummary && !aiLoading && (
+          <div className="p-4 bg-black/20 rounded-lg border border-white/5 ai-markdown">
+            <ReactMarkdown
+              components={{
+                p: ({node, ...props}) => <p className="mb-3 text-gray-300 leading-relaxed" {...props} />,
+                ul: ({node, ...props}) => <ul className="list-disc pl-5 mb-4 text-gray-300 space-y-1" {...props} />,
+                li: ({node, ...props}) => <li {...props} />,
+                strong: ({node, ...props}) => <strong className="text-white font-semibold" {...props} />
+              }}
+            >
+              {aiSummary}
+            </ReactMarkdown>
+          </div>
+        )}
       </div>
     </div>
   );

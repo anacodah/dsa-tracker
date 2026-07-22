@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { saveProblem } from '../storage';
 
 const TOPICS = [
@@ -20,6 +20,24 @@ const LogProblem = () => {
     solvedIndependently: true,
     note: ''
   });
+
+  const location = useLocation();
+
+  React.useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const name = params.get('name');
+    const url = params.get('url');
+    const difficulty = params.get('difficulty');
+    
+    if (name || url || difficulty) {
+      setFormData(prev => ({
+        ...prev,
+        name: name || prev.name,
+        url: url || prev.url,
+        difficulty: (difficulty === 'Easy' || difficulty === 'Medium' || difficulty === 'Hard') ? difficulty : prev.difficulty
+      }));
+    }
+  }, [location.search]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;

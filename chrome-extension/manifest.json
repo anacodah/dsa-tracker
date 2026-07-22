@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "DSA Tracker Quick Logger",
+  "version": "1.0",
+  "description": "Log LeetCode problems directly to your DSA Tracker",
+  "permissions": ["activeTab"],
+  "content_scripts": [
+    {
+      "matches": ["*://leetcode.com/problems/*"],
+      "js": ["content.js"],
+      "css": ["styles.css"]
+    }
+  ]
+}
