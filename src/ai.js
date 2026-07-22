@@ -5,7 +5,7 @@ export const getProgressAnalysis = async (problems) => {
   if (!API_KEY) {
     throw new Error('Missing VITE_GEMINI_API_KEY in environment variables.');
   }
-  
+
   if (!problems || problems.length === 0) {
     return "You haven't logged any problems yet. Start solving and logging to get an AI analysis!";
   }
@@ -15,7 +15,7 @@ export const getProgressAnalysis = async (problems) => {
   const recent = problems.slice(0, 30); // focus on recent trends
   const topicCounts = {};
   const difficulties = { Easy: 0, Medium: 0, Hard: 0 };
-  
+
   recent.forEach(p => {
     topicCounts[p.topic] = (topicCounts[p.topic] || 0) + 1;
     if (p.difficulty) difficulties[p.difficulty]++;
@@ -39,7 +39,7 @@ Format with simple markdown (bolding, bullet points).
 `;
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${API_KEY}`;
-  
+
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
